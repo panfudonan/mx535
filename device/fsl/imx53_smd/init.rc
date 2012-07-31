@@ -43,7 +43,7 @@ on boot
     setprop ro.AUTO_CONFIG_DISPLAY  1
 
     # Landscape mode
-    setprop ro.sf.hwrotation 180
+    setprop ro.sf.hwrotation 0
 
     # hdmi audio output
     setprop ro.HDMI_AUDIO_OUTPUT 1
