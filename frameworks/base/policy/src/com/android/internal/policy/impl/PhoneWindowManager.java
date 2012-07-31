@@ -45,6 +45,7 @@ import android.os.SystemClock;
 import android.os.SystemProperties;
 import android.os.Vibrator;
 import android.provider.Settings;
+import com.android.internal.app.ShutdownThread;
 
 import com.android.internal.policy.PolicyManager;
 import com.android.internal.statusbar.IStatusBarService;
@@ -482,7 +483,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 mPowerKeyHandled = true;
                 performHapticFeedbackLw(null, HapticFeedbackConstants.LONG_PRESS, false);
                 sendCloseSystemWindows(SYSTEM_DIALOG_REASON_GLOBAL_ACTIONS);
-                showGlobalActionsDialog();
+                //showGlobalActionsDialog();
+                ShutdownThread.shutdown(mContext, true);
             }
         }
     };
