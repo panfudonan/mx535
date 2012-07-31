@@ -37,7 +37,6 @@ import com.android.settings.nfc.NfcEnabler;
 
 public class WirelessSettings extends PreferenceActivity {
 
-    private static final String KEY_TOGGLE_AIRPLANE = "toggle_airplane";
     private static final String KEY_TOGGLE_BLUETOOTH = "toggle_bluetooth";
     private static final String KEY_TOGGLE_WIFI = "toggle_wifi";
     private static final String KEY_TOGGLE_NFC = "toggle_nfc";
@@ -51,8 +50,6 @@ public class WirelessSettings extends PreferenceActivity {
     public static final String EXIT_ECM_RESULT = "exit_ecm_result";
     public static final int REQUEST_CODE_EXIT_ECM = 1;
 
-    private AirplaneModeEnabler mAirplaneModeEnabler;
-    private CheckBoxPreference mAirplaneModePreference;
     private WifiEnabler mWifiEnabler;
     private NfcEnabler mNfcEnabler;
     private BluetoothEnabler mBtEnabler;
@@ -65,7 +62,7 @@ public class WirelessSettings extends PreferenceActivity {
      */
     @Override
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
-        if (preference == mAirplaneModePreference && Boolean.parseBoolean(
+        if (Boolean.parseBoolean(
                 SystemProperties.get(TelephonyProperties.PROPERTY_INECM_MODE))) {
             // In ECM mode launch ECM app dialog
             startActivityForResult(
@@ -93,14 +90,11 @@ public class WirelessSettings extends PreferenceActivity {
 
         addPreferencesFromResource(R.xml.wireless_settings);
 
-        CheckBoxPreference airplane = (CheckBoxPreference) findPreference(KEY_TOGGLE_AIRPLANE);
         CheckBoxPreference wifi = (CheckBoxPreference) findPreference(KEY_TOGGLE_WIFI);
         CheckBoxPreference bt = (CheckBoxPreference) findPreference(KEY_TOGGLE_BLUETOOTH);
         CheckBoxPreference nfc = (CheckBoxPreference) findPreference(KEY_TOGGLE_NFC);
         CheckBoxPreference ethernet = (CheckBoxPreference) findPreference(KEY_TOGGLE_ETHERNET);
         
-        mAirplaneModeEnabler = new AirplaneModeEnabler(this, airplane);
-        mAirplaneModePreference = (CheckBoxPreference) findPreference(KEY_TOGGLE_AIRPLANE);
         mWifiEnabler = new WifiEnabler(this, wifi);
         mBtEnabler = new BluetoothEnabler(this, bt);
         mNfcEnabler = new NfcEnabler(this, nfc);
@@ -122,21 +116,7 @@ public class WirelessSettings extends PreferenceActivity {
             if (toggleable == null || !toggleable.contains(Settings.System.RADIO_WIMAX )
                     && isWimaxEnabled) {
                 Preference ps = (Preference) findPreference(KEY_WIMAX_SETTINGS);
-                ps.setDependency(KEY_TOGGLE_AIRPLANE);
             }
-        }
-
-        // Manually set dependencies for Wifi when not toggleable.
-        if (toggleable == null || !toggleable.contains(Settings.System.RADIO_WIFI)) {
-            wifi.setDependency(KEY_TOGGLE_AIRPLANE);
-            findPreference(KEY_WIFI_SETTINGS).setDependency(KEY_TOGGLE_AIRPLANE);
-            findPreference(KEY_VPN_SETTINGS).setDependency(KEY_TOGGLE_AIRPLANE);
-        }
-
-        // Manually set dependencies for Bluetooth when not toggleable.
-        if (toggleable == null || !toggleable.contains(Settings.System.RADIO_BLUETOOTH)) {
-            bt.setDependency(KEY_TOGGLE_AIRPLANE);
-            findPreference(KEY_BT_SETTINGS).setDependency(KEY_TOGGLE_AIRPLANE);
         }
 
         // Remove Bluetooth Settings if Bluetooth service is not available.
@@ -177,7 +157,7 @@ public class WirelessSettings extends PreferenceActivity {
     protected void onResume() {
         super.onResume();
 
-        mAirplaneModeEnabler.resume();
+        //mAirplaneModeEnabler.resume();
         mWifiEnabler.resume();
         mBtEnabler.resume();
         mNfcEnabler.resume();
@@ -188,7 +168,7 @@ public class WirelessSettings extends PreferenceActivity {
     protected void onPause() {
         super.onPause();
 
-        mAirplaneModeEnabler.pause();
+        //mAirplaneModeEnabler.pause();
         mWifiEnabler.pause();
         mBtEnabler.pause();
         mNfcEnabler.pause();
@@ -200,8 +180,6 @@ public class WirelessSettings extends PreferenceActivity {
         if (requestCode == REQUEST_CODE_EXIT_ECM) {
             Boolean isChoiceYes = data.getBooleanExtra(EXIT_ECM_RESULT, false);
             // Set Airplane mode based on the return value and checkbox state
-            mAirplaneModeEnabler.setAirplaneModeInECM(isChoiceYes,
-                    mAirplaneModePreference.isChecked());
         }
     }
 }
