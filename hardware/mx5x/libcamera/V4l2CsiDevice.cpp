@@ -342,7 +342,7 @@ namespace android{
         struct v4l2_control ctrl;
 
         // Set rotation
-        ctrl.id = V4L2_CID_MXC_ROT;
+        ctrl.id = 0x00980900;
         if (pCapcfg->rotate == SENSOR_PREVIEW_BACK_REF)
             ctrl.value = V4L2_MXC_CAM_ROTATE_NONE;
         else if (pCapcfg->rotate == SENSOR_PREVIEW_VERT_FLIP)
