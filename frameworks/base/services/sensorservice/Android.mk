@@ -12,13 +12,15 @@ LOCAL_SRC_FILES:= \
 
 LOCAL_CFLAGS:= -DLOG_TAG=\"SensorService\"
 
+LOCAL_LDLIBS += -lrt -lpthread -ldl
 # need "-lrt" on Linux simulator to pick up clock_gettime
 ifeq ($(TARGET_SIMULATOR),true)
 	ifeq ($(HOST_OS),linux)
-		LOCAL_LDLIBS += -lrt -lpthread
+		LOCAL_LDLIBS += -lrt -lpthread -ldl
 	endif
 endif
 
+LOCAL_LDLIBS += -lrt -lpthread -ldl
 LOCAL_SHARED_LIBRARIES := \
 	libcutils \
 	libhardware \
@@ -26,6 +28,8 @@ LOCAL_SHARED_LIBRARIES := \
 	libbinder \
 	libui \
 	libgui
+LOCAL_LDLIBS += -lrt -lpthread -ldl
+LOCAL_SHARED_LIBRARIES += libdl
 
 LOCAL_PRELINK_MODULE := false
 

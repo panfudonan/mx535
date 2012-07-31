@@ -30,6 +30,8 @@ namespace android {
 
 class Sensor;
 class ISensorEventConnection;
+class IMplSysConnection;
+class IMplConnection;
 
 class ISensorServer : public IInterface
 {
@@ -38,6 +40,8 @@ public:
 
     virtual Vector<Sensor> getSensorList() = 0;
     virtual sp<ISensorEventConnection> createSensorEventConnection() = 0;
+    virtual sp<IMplSysConnection> createMplSysConnection() = 0;
+    virtual sp<IMplConnection> createMplConnection() = 0;
 };
 
 // ----------------------------------------------------------------------------

@@ -7,7 +7,9 @@ LOCAL_SRC_FILES:= \
 	Sensor.cpp \
 	SensorChannel.cpp \
 	SensorEventQueue.cpp \
-	SensorManager.cpp
+	SensorManager.cpp \
+	IMplSysConnection.cpp \
+	IMplConnection.cpp
 
 LOCAL_SHARED_LIBRARIES := \
 	libcutils \

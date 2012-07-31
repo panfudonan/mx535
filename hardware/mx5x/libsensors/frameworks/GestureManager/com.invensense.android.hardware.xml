@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<permissions>
+    <library name="com.invensense.android.hardware"
+            file="/system/framework/com.invensense.android.hardware.jar"/>
+     <library name="com.invensense.android.hardware.sysapi"
+            file="/system/framework/com.invensense.android.hardware.sysapi.jar"/>       
+</permissions>

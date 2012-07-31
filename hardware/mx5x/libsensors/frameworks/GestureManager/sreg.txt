@@ -1,0 +1,68 @@
+    public boolean registerListener(SensorEventListener listener, Sensor sensor, int rate,
+            Handler handler) {
+        if (listener == null || sensor == null) {
+            return false;
+        }
+        boolean result = true;
+        int delay = -1;
+        switch (rate) {
+            case SENSOR_DELAY_FASTEST:
+                delay = 0;
+                break;
+            case SENSOR_DELAY_GAME:
+                delay = 20000;
+                break;
+            case SENSOR_DELAY_UI:
+                delay = 60000;
+                break;
+            case SENSOR_DELAY_NORMAL:
+                delay = 200000;
+                break;
+            default:
+                delay = rate;
+                break;
+        }
+
+        synchronized (sListeners) {
+            // look for this listener in our list
+            ListenerDelegate l = null;
+            for (ListenerDelegate i : sListeners) {
+                if (i.getListener() == listener) {
+                    l = i;
+                    break;
+                }
+            }
+
+            // if we don't find it, add it to the list
+            if (l == null) {
+                l = new ListenerDelegate(listener, sensor, handler);
+                sListeners.add(l);
+                // if the list is not empty, start our main thread
+                if (!sListeners.isEmpty()) {
+                    if (sSensorThread.startLocked()) {
+                        if (!enableSensorLocked(sensor, delay)) {
+                            // oops. there was an error
+                            sListeners.remove(l);
+                            result = false;
+                        }
+                    } else {
+                        // there was an error, remove the listener
+                        sListeners.remove(l);
+                        result = false;
+                    }
+                } else {
+                    // weird, we couldn't add the listener
+                    result = false;
+                }
+            } else {
+                l.addSensor(sensor);
+                if (!enableSensorLocked(sensor, delay)) {
+                    // oops. there was an error
+                    l.removeSensor(sensor);
+                    result = false;
+                }
+            }
+        }
+
+        return result;
+    }

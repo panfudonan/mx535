@@ -96,6 +96,10 @@ struct perm_node {
     struct listnode plist;
 };
 
+static struct perms_ devperms[] = {
+     { "/dev/mpu"           ,0660,   AID_SYSTEM,    AID_SYSTEM,     1 },
+};
+
 static list_declare(sys_perms);
 static list_declare(dev_perms);
 

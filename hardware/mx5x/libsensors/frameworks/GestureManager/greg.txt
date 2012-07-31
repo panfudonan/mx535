@@ -1,0 +1,45 @@
+    public boolean registerListener(GestureEventListener listener, Gesture gesture, Handler handler) {
+        if (listener == null || gesture == null) {
+            return false;
+        }      
+
+
+            synchronized (sListeners) {
+                ListenerDelegate l = null;
+                for (ListenerDelegate i : sListeners) {
+                    if (i.getListener() == listener) {
+                        l = i;
+                        break;
+                    }
+                }
+
+
+                if (l == null) {
+                    l = new ListenerDelegate(listener, gesture, handler);
+                    sListeners.add(l);
+                    if (!sListeners.isEmpty()) {
+                        if(sGestureThread.startLocked()) {
+                            if(!enableGestureLocked(gesture)) {
+                                sListeners.remove(l);
+                                result = false;
+                            }
+                        
+                } else {
+                   sListners.remove(l);
+                   result = false;
+                }
+             } else {
+                result = false
+             }
+           } else {
+                l.addGesture(gesture)
+                if(!enableGestureLockec(gesture); {
+                    l.removeGesture(gesture);
+                    result = false
+                }
+            }
+        }
+
+        return result;
+    }
+

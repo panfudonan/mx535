@@ -1,0 +1,1 @@
+swig -java -package com.invensense.android.hardware -c++ glyphapi.i
