@@ -163,6 +163,13 @@ on post-fs
     chmod 0770 /data/misc/wifi
     chmod 0660 /data/misc/wifi/wpa_supplicant.conf
     chmod 0775 /system/etc/dhcpcd/dhcpcd-run-hooks
+ # Prepare for wifi
+    setprop wlan.interface wlan0
+    setprop wlan.driver.status ok
+    setprop wifi.interface wlan0
+    mkdir /data/misc/wifi/sockets 0777 wifi wifi
+    mkdir /data/misc/wifi/wpa_supplicant 0777 wifi wifi
+    mkdir /data/misc/dhcp 0770 dhcp dhcp     chown dhcp dhcp /data/misc/dhcp
     mkdir /data/local 0771 shell shell
     mkdir /data/local/tmp 0771 shell shell
     mkdir /data/data 0771 system system

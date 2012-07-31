@@ -100,7 +100,7 @@ static jstring doStringCommand(JNIEnv *env, const char *cmd)
 
 static jboolean android_net_wifi_loadApDriver(JNIEnv* env, jobject clazz)
 {
-    return (jboolean)(::wifi_load_ap_driver() == 0);
+    return (jboolean)(::wifi_load_driver() == 0);
 }
 static jboolean android_net_wifi_loadDriver(JNIEnv* env, jobject clazz)
 {
