@@ -38,13 +38,82 @@
 
 #define HCID_START_DELAY_SEC   3
 #define HCID_STOP_DELAY_USEC 500000
+#define BT_DRIVER_MODULE_PATH         "/system/lib/modules/bt8xxx.ko"
+#define BT_DRIVER_MODULE_NAME         "bt8xxx"
 
 #define MIN(x,y) (((x)<(y))?(x):(y))
 
-
+extern int init_module(void *, unsigned long, const char *);
+extern int delete_module(const char *, unsigned int);
 static int rfkill_id = -1;
 static char *rfkill_state_path = NULL;
 
+void *bt_load_file(const char *fn, unsigned *_sz)
+{
+    char *data;
+    int sz; 
+    int fd; 
+
+    data = 0;
+    fd = open(fn, O_RDONLY);
+    if(fd < 0) return 0;
+
+    sz = lseek(fd, 0, SEEK_END);
+    if(sz < 0) goto oops;
+
+    if(lseek(fd, 0, SEEK_SET) != 0) goto oops;
+
+    data = (char*) malloc(sz + 1); 
+    if(data == 0) goto oops;
+
+    if(read(fd, data, sz) != sz) goto oops;
+    close(fd);
+    data[sz] = 0;
+
+    if(_sz) *_sz = sz; 
+    return data;
+
+oops:
+    close(fd);
+    if(data != 0) free(data);
+    return 0;
+}
+
+static int bt_insmod(const char *filename, const char *args)
+{
+    void *module;
+    unsigned int size;
+    int ret;
+
+    module = bt_load_file(filename, &size);
+    if (!module)
+        return -1; 
+
+    ret = init_module(module, size, args);
+
+    free(module);
+
+    return ret;
+}
+
+static int bt_rmmod(const char *modname)
+{
+    int ret = -1; 
+    int maxtry = 10; 
+
+    while (maxtry-- > 0) {
+        ret = delete_module(modname, O_NONBLOCK | O_EXCL);
+        if (ret < 0 && errno == EAGAIN)
+            usleep(500000);
+        else
+            break;
+    }   
+
+    if (ret != 0)
+        LOGD("Unable to unload driver module \"%s\": %s\n",
+             modname, strerror(errno));
+    return ret;
+}
 
 static int init_rfkill() {
     char path[64];
@@ -153,6 +222,10 @@ int bt_enable() {
     int hci_sock = -1;
     int attempt;
 
+    if (bt_insmod(BT_DRIVER_MODULE_PATH,"") < 0) {
+        LOGI("insmod error");
+    }
+	
     if (set_bluetooth_power(1) < 0) goto out;
 
     LOGI("Starting hciattach daemon");
@@ -178,7 +251,6 @@ int bt_enable() {
         goto out;
     }
 
-    LOGI("Starting bluetoothd deamon");
     if (property_set("ctl.start", "bluetoothd") < 0) {
         LOGE("Failed to start bluetoothd");
         goto out;
@@ -218,6 +290,11 @@ int bt_disable() {
     if (set_bluetooth_power(0) < 0) {
         goto out;
     }
+    
+    if (bt_rmmod(BT_DRIVER_MODULE_NAME) < 0) {
+	LOGE("Error rmmod bt8xxx");
+    }
+
     ret = 0;
 
 out:
